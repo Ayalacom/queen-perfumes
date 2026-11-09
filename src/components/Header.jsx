@@ -10,8 +10,7 @@ export default function Header() {
         <Link to="/" className="logo">{shop.name}</Link>
         <nav className="nav">
           <NavLink to="/" end>Главная</NavLink>
-          <NavLink to="/women">Женские</NavLink>
-          <NavLink to="/men">Мужские</NavLink>
+          {shop.categories.map((c) => <NavLink key={c.key} to={c.path}>{c.nav}</NavLink>)}
           <NavLink to="/favorites">Избранное{favs.length ? ` (${favs.length})` : ''}</NavLink>
           <NavLink to="/cart">Корзина{cartCount ? ` (${cartCount})` : ''}</NavLink>
           <NavLink to="/contacts">Контакты</NavLink>

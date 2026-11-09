@@ -15,7 +15,7 @@ export default function Product() {
   if (!p) return <Navigate to="/" replace />
 
   const price = size ? formatPrice(p.prices?.[size]) : null
-  const back = p.gender === 'women' ? '/women' : '/men'
+  const back = shop.categories.find((c) => c.key === p.gender)?.path || '/'
   const isFav = favs.includes(p.id)
 
   return (
@@ -27,8 +27,8 @@ export default function Product() {
           <span className="card__brand">{p.brand}</span>
           <h1 className="product__name">{p.name}</h1>
           <dl className="facts">
-            <div><dt>Направление</dt><dd>{p.direction}</dd></div>
-            <div><dt>Ноты</dt><dd>{p.notes.join(', ')}</dd></div>
+            {p.direction && <div><dt>Направление</dt><dd>{p.direction}</dd></div>}
+            {p.notes.length > 0 && <div><dt>Ноты</dt><dd>{p.notes.join(', ')}</dd></div>}
             <div><dt>Описание</dt><dd>{p.description}</dd></div>
           </dl>
           <p className="label">Объём</p>

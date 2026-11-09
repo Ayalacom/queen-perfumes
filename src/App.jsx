@@ -27,6 +27,8 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/women" element={<Catalog gender="women" />} />
           <Route path="/men" element={<Catalog gender="men" />} />
+          <Route path="/unisex" element={<Catalog gender="unisex" />} />
+          <Route path="/copy" element={<Catalog gender="copy" />} />
           <Route path="/perfume/:id" element={<Product />} />
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/cart" element={<Cart />} />

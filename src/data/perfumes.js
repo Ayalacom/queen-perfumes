@@ -1,85 +1,246 @@
 import { shop } from './shop.js'
 
 /*
-  ЦЕНЫ (примерные, поменяйте на свои).
-  byMl(900) = цена за 1 мл 900 ₸. Цены для всех объёмов считаются сами:
-  маленькие объёмы чуть дороже за мл, большие чуть дешевле. Результат округляется до 100 ₸.
-  Чтобы задать цены вручную, замените byMl(900) на { 3: 3000, 5: 5000, 10: 9000, ... }
+  КАК РАБОТАЕТ ЭТОТ ФАЙЛ
+  Каждый аромат это одна строка в списке rows ниже:
+  [раздел, бренд, название, цена за 1 мл, направление, ноты через запятую, описание]
+  Раздел: 'women', 'men' или 'unisex' (на сайте он называется «Без границ»).
+  Если направление, ноты или описание неизвестны, оставьте пустые кавычки '', их не будет видно на сайте.
+  Цена объёма = цена за 1 мл × объём. Чтобы задать цены вручную, замените число цены за 1 мл
+  на { 3: 3000, 5: 5000, 10: 9000, 12: 11000, 13: 12000, 15: 14000, 20: 18000, 25: 22000, 30: 26000, 50: 42000 }
+  Фото: файл должен называться как id аромата (виден в адресе страницы), например aventus.jpg, и лежать в public/images.
 */
-const factor = (s) => (s <= 5 ? 1.25 : s <= 10 ? 1.1 : s <= 20 ? 1 : s <= 30 ? 0.95 : 0.9)
-const byMl = (perMl) =>
-  Object.fromEntries(shop.sizes.map((s) => [s, Math.round((s * perMl * factor(s)) / 100) * 100]))
+const rows = [
+  // МУЖСКИЕ
+  ['men', 'Louis Vuitton', 'Imagination', 1200, 'Цитрусово-пряный', 'Цитрон, бергамот, имбирь, корица, чёрный чай, амброксан', 'Свежий цитрус и чай с пряной корицей, переходящие в чистый амбровый шлейф.'],
+  ['men', 'Louis Vuitton', 'Ombre Nomade', 1200, 'Восточно-древесный', 'Уд, ладан, малина, роза, берёза, бензоин', 'Глубокий дымный уд со сладкой малиной и розой. Тёплый аромат для вечера.'],
+  ['men', 'Antonio Banderas', 'Blue Seduction', 600, 'Свежий', '', 'Лёгкий свежий аромат на каждый день.'],
+  ['men', 'Paco Rabanne', 'Invictus', 1200, 'Свежий древесный', 'Грейпфрут, морские ноты, лавр, гваяковое дерево, пачули, амбра', 'Спортивная свежесть грейпфрута и моря с тёплым древесным шлейфом.'],
+  ['men', 'Paco Rabanne', 'One Million', 1200, 'Сладко-пряный', 'Грейпфрут, мята, мандарин, корица, роза, кожа, амбра', 'Насыщенный сладко-пряный аромат с кожей и амброй, созданный привлекать внимание.'],
+  ['men', 'Creed', 'Aventus', 1000, 'Фруктово-древесный', 'Ананас, бергамот, чёрная смородина, берёза, мускус, дубовый мох', 'Знаменитый аромат успеха: сочные фрукты с дымной берёзой и мхом.'],
+  ['men', 'Creed', 'Absolu', 1200, '', '', 'Насыщенный статусный аромат дома Creed.'],
+  ['men', 'Yves Saint Laurent', 'Y', 1000, 'Свежий древесно-ароматический', 'Яблоко, имбирь, бергамот, шалфей, можжевельник, тонка, кедр', 'Чистый, современный и уверенный аромат с яблоком, имбирём и кедром.'],
+  ['men', 'Дима Билан', 'Exhit', 1000, '', '', 'Авторский аромат Димы Билана.'],
+  ['men', 'Dior', 'Sauvage', 1000, 'Свежий пряный', 'Бергамот, перец, лаванда, амброксан', 'Свежий, открытый и энергичный аромат с заметным шлейфом.'],
+  ['men', 'Parfums de Marly', 'Althaïr', 1200, 'Сладко-пряный', 'Бергамот, кардамон, корица, ваниль, пралине, тонка, сандал', 'Тёплый гурманский аромат: пряная корица, ваниль и пралине на бархатной основе.'],
+  ['men', 'Chanel', 'Bleu de Chanel', 1000, 'Древесно-ароматический', 'Цитрусы, мята, грейпфрут, ладан, кедр, сандал', 'Сдержанный и благородный аромат: цитрус, мята и сухое дерево.'],
+  ['men', 'Jean Paul Gaultier', 'Le Male', 1000, 'Ароматический ванильный', 'Лаванда, мята, бергамот, кардамон, ваниль, тонка, амбра', 'Классика с лавандой, мятой и сладкой ванилью. Тёплый, чувственный аромат.'],
+  ['men', 'Hermès', 'Terre d’Hermès', 1000, 'Древесно-цитрусовый', 'Апельсин, грейпфрут, перец, кремень, ветивер, кедр, бензоин', 'Минеральный цитрус с землистым ветивером. Спокойный, зрелый аромат.'],
+  ['men', 'Montblanc', 'Explorer', 1000, 'Древесно-ароматический', 'Бергамот, розовый перец, ветивер, пачули, кожа, амброксан', 'Аромат путешествий: свежий верх, ветивер и тёплая кожаная основа.'],
+  ['men', 'Mancera', 'Red Tobacco', 1200, 'Табачно-пряный', 'Корица, табак, уд, ваниль, амбра', 'Тёплый плотный аромат: табак и пряности на ванильно-амбровой основе.'],
+  ['men', 'Dior', 'Homme Sport', 800, 'Свежий цитрусовый', 'Цитрусы, имбирь, кедр, ветивер, мускус', 'Бодрый аромат для активного дня: цитрусы и имбирь на древесной основе.'],
+  ['men', 'Yves Saint Laurent', 'M7', 1000, 'Восточно-древесный', '', 'Выразительный аромат дома YSL с глубоким древесным характером.'],
+  ['men', 'Versace', 'Men', 1000, '', '', 'Мужской аромат дома Versace.'],
+  ['men', 'Jean Paul Gaultier', 'Le Male Le Beau', 1200, 'Сладко-древесный', 'Бергамот, кокос, тонка, кедр, амбра', 'Солнечный кокос и тёплая тонка с мягкой древесной основой.'],
 
-/*
-  КАК ДОБАВИТЬ / ИЗМЕНИТЬ АРОМАТ
-  1. Скопируйте любой блок { ... } и вставьте ниже, не забыв запятую.
-  2. gender: 'women' или 'men'.
-  3. image: положите фото в папку public/images и укажите имя файла.
-  4. prices: впишите цену для нужного объёма, например prices: { 3: 5000, 5: 8000, 10: 15000 }
-     Если цена не указана, покупателю покажется «уточните цену».
-*/
-export const perfumes = [
-  {
-    id: 'good-girl-gone-bad', gender: 'women', brand: 'By Kilian', name: 'Good Girl Gone Bad',
-    direction: 'Фруктово-цветочный',
-    notes: ['Жасмин', 'Майская роза', 'Османтус', 'Тубероза', 'Нарцисс', 'Амбра'],
-    description: 'Нежный, соблазнительный цветочный аромат с выразительным и запоминающимся характером.',
-    image: '/images/good-girl-gone-bad.jpg', prices: byMl(2600),
-  },
-  {
-    id: 'coco-mademoiselle', gender: 'women', brand: 'Chanel', name: 'Coco Mademoiselle',
-    direction: 'Восточно-цветочный',
-    notes: ['Апельсин', 'Бергамот', 'Жасмин', 'Роза', 'Пачули', 'Ветивер', 'Ваниль'],
-    description: 'Свежий цитрус в начале и тёплый шлейф пачули. Уверенный, элегантный аромат на каждый день.',
-    image: '/images/coco-mademoiselle.jpg', prices: byMl(1000),
-  },
-  {
-    id: 'libre', gender: 'women', brand: 'Yves Saint Laurent', name: 'Libre',
-    direction: 'Цветочно-ванильный',
-    notes: ['Лаванда', 'Мандарин', 'Флёрдоранж', 'Жасмин', 'Ваниль', 'Амбра'],
-    description: 'Лаванда в сочетании с цветами и ванилью: свободный, смелый и тёплый аромат.',
-    image: '/images/libre.jpg', prices: byMl(900),
-  },
-  {
-    id: 'la-vie-est-belle', gender: 'women', brand: 'Lancôme', name: 'La Vie Est Belle',
-    direction: 'Сладко-цветочный',
-    notes: ['Ирис', 'Груша', 'Чёрная смородина', 'Пачули', 'Пралине', 'Ваниль'],
-    description: 'Сладкое пралине и нежный ирис создают уютный, радостный и очень женственный аромат.',
-    image: '/images/la-vie-est-belle.jpg', prices: byMl(800),
-  },
-  {
-    id: 'jadore', gender: 'women', brand: 'Dior', name: "J'adore",
-    direction: 'Цветочно-фруктовый',
-    notes: ['Иланг-иланг', 'Роза', 'Жасмин', 'Персик', 'Груша', 'Мускус'],
-    description: 'Классический букет белых цветов: яркий, светлый и безупречно женственный.',
-    image: '/images/jadore.jpg', prices: byMl(900),
-  },
-  {
-    id: 'sauvage', gender: 'men', brand: 'Dior', name: 'Sauvage',
-    direction: 'Свежий пряный',
-    notes: ['Бергамот', 'Перец', 'Лаванда', 'Амброксан'],
-    description: 'Свежий, открытый и энергичный мужской аромат с заметным шлейфом.',
-    image: '/images/sauvage.jpg', prices: byMl(900),
-  },
-  {
-    id: 'bleu-de-chanel', gender: 'men', brand: 'Chanel', name: 'Bleu de Chanel',
-    direction: 'Древесно-ароматический',
-    notes: ['Цитрусы', 'Мята', 'Грейпфрут', 'Ладан', 'Кедр', 'Сандал'],
-    description: 'Сдержанный и благородный аромат: цитрус, мята и сухое благородное дерево.',
-    image: '/images/bleu-de-chanel.jpg', prices: byMl(1000),
-  },
-  {
-    id: '1-million', gender: 'men', brand: 'Paco Rabanne', name: '1 Million',
-    direction: 'Сладко-пряный',
-    notes: ['Грейпфрут', 'Мята', 'Мандарин', 'Корица', 'Роза', 'Кожа', 'Амбра'],
-    description: 'Насыщенный сладко-пряный аромат с кожей и амброй, созданный привлекать внимание.',
-    image: '/images/1-million.jpg', prices: byMl(800),
-  },
-  {
-    id: 'acqua-di-gio', gender: 'men', brand: 'Giorgio Armani', name: 'Acqua di Giò',
-    direction: 'Морской свежий',
-    notes: ['Морские ноты', 'Бергамот', 'Жасмин', 'Розмарин', 'Пачули'],
-    description: 'Лёгкий аромат морского бриза, удобный для ежедневного использования.',
-    image: '/images/acqua-di-gio.jpg', prices: byMl(800),
-  },
+  // ЖЕНСКИЕ
+  ['women', 'Chloé', 'Chloé', 1000, 'Цветочный пудровый', 'Пион, личи, фрезия, роза, магнолия, кедр, амбра', 'Нежный букет роз и пиона: чистый, романтичный, женственный аромат.'],
+
+  // БЕЗ ГРАНИЦ (унисекс)
+  ['unisex', 'Louis Vuitton', 'Moon Tal', 1000, '', '', ''],
+  ['unisex', 'Louis Vuitton', 'Symphony', 1200, '', '', ''],
+  ['unisex', 'Louis Vuitton', 'Stellar Times', 1200, '', '', ''],
+  ['unisex', 'Tom Ford', 'Ombre Leather', 1200, 'Кожаный', 'Кожа, кардамон, жасмин, пачули, амбра, дубовый мох', 'Мягкая замшевая кожа с пряным кардамоном. Уверенный аромат с шлейфом.'],
+  ['unisex', 'Tom Ford', 'Cherry', 1000, 'Гурманский вишнёвый', 'Вишня, горький миндаль, турецкая роза, жасмин, тонка, ваниль, сандал', 'Сочная вишня, миндаль и роза на тёплой ванильной основе.'],
+  ['unisex', 'Tom Ford', 'Tobacco Vanille', 1000, 'Пряно-ванильный', 'Табачный лист, ваниль, какао, тонка, сухофрукты, специи', 'Уютный табак с ванилью и какао. Тёплый, густой аромат для холодной погоды.'],
+  ['unisex', 'Tom Ford', 'Vanilla Sex', 1000, 'Ванильный', '', ''],
+  ['unisex', 'Tom Ford', 'Soleil Blanc', 1000, 'Цветочно-янтарный', 'Бергамот, кардамон, иланг-иланг, тубероза, жасмин, кокос, амбра', 'Солнечный белый цветочный букет с кокосом и тёплой амброй.'],
+  ['unisex', '', 'Феромон', 1200, '', '', ''],
+  ['unisex', 'Escentric Molecules', 'Molecule 02', 1200, 'Древесно-амбровый', 'Амброксан', 'Минималистичный аромат на одной ноте, который у каждого раскрывается по-своему.'],
+  ['unisex', 'Escentric Molecules', 'Molecule 01', 800, 'Древесно-мускусный', 'Изо Е Супер', 'Лёгкий чистый шлейф на одной молекуле, тёплый и очень личный.'],
+  ['unisex', 'Escentric Molecules', 'Molecule 01 Mandarin', 800, 'Цитрусово-древесный', 'Мандарин, Изо Е Супер', 'Лёгкий чистый шлейф с яркой цитрусовой ноткой мандарина.'],
+  ['unisex', '', 'Chopard', 1200, '', '', ''],
+  ['unisex', '', 'Abyad', 1200, '', '', ''],
+  ['unisex', 'Juliette Has a Gun', 'Not a Perfume', 1200, 'Амбровый', 'Цеталокс', 'Чистый прозрачный аромат на одной ноте, как лёгкий шлейф на коже.'],
+  ['unisex', 'Le Labo', 'Another 13', 1200, 'Мускусно-амбровый', 'Амброксан, жасмин, мох, амбретта, мускус', 'Современный минималистичный аромат: чистый амбровый шлейф с мускусом.'],
+  ['unisex', 'Marc-Antoine Barrois', 'Ganymede', 1200, 'Минерально-замшевый', 'Мандарин, шафран, замша, сандал', 'Необычный минеральный аромат с мандарином, шафраном и мягкой замшей.'],
+  ['unisex', '', 'Gaba', 1200, '', '', ''],
+  ['unisex', 'Chloé', 'Cedrus', 1200, 'Древесный', '', ''],
+  ['unisex', 'Parfums de Marly', 'Layton', 1200, 'Ванильно-пряный', 'Яблоко, лаванда, бергамот, жасмин, ваниль, кардамон, сандал, пачули', 'Яркое яблоко и лаванда на тёплой ванильно-пряной основе.'],
+  ['unisex', 'Mancera', 'Instant Crush', 1000, '', '', ''],
+  ['unisex', 'Richard', 'White Chocolate', 1000, 'Гурманский', '', ''],
+  ['unisex', 'Maison Crivelli', 'Saffron', 1200, 'Пряный', 'Шафран', ''],
+  ['unisex', 'Memo', 'Madurai', 1200, '', '', ''],
+  ['unisex', 'Clive Christian', 'Matsukita', 1000, '', '', ''],
+  ['unisex', 'Clive Christian', 'Hedonistic', 1000, '', '', ''],
+  ['unisex', '', 'Narcotic', 1000, '', '', ''],
+  ['unisex', 'Zielinski', 'Vanilla', 1200, 'Ванильный', 'Ваниль', ''],
+  ['unisex', 'Zielinski', 'Black Pepper', 800, 'Пряный', 'Чёрный перец', ''],
+  ['unisex', 'Zarkoperfume', 'Muse', 1200, '', '', ''],
+  ['unisex', 'Roja', 'Elysium Cologne', 1000, 'Цитрусовый свежий', 'Цитрусы', ''],
+  ['unisex', '', 'Roja Dove', 1000, '', '', ''],
+  ['unisex', '', 'Tilia', 1200, '', '', ''],
+  ['unisex', '', 'Baccarat Extrait', 1200, '', '', ''],
+  ['unisex', '', 'Clinique', 1200, '', '', ''],
+  ['unisex', '', 'Pinter', 1000, '', '', ''],
 ]
+
+// ===== ДОБАВЛЕНО: [раздел, бренд, название, цена за 1 мл] =====
+// Направление, ноты и описание для этих ароматов пока пустые, их можно дописать позже.
+const more = [
+  // МУЖСКИЕ
+  ['men', 'Montblanc', 'Legend', 1000],
+  ['men', 'Antonio Banderas', 'Golden Secret', 800],
+  ['men', 'Valentino', 'Uomo Born in Roma Intense', 1000],
+  ['men', 'Giorgio Armani', 'Acqua di Giò (светлый)', 1000],
+  ['men', 'Bvlgari', 'Aqva Pour Homme Atlantiqve', 1000],
+  ['men', '', 'Cristiano Ronaldo', 800],
+  ['men', 'Azzaro', 'Chrome', 800],
+  ['men', 'Bvlgari', 'Aqva Pour Homme Marine', 800],
+  ['men', 'Carolina Herrera', 'Chic for Men', 800],
+  ['men', 'Shaik', 'No 77', 800],
+  ['men', 'Versace', 'Eros', 800],
+  ['men', 'Bvlgari', 'Tygar', 1000],
+  ['men', 'Chanel', 'Allure Homme Sport', 800],
+  ['men', 'Giorgio Armani', 'Stronger With You Intensely', 800],
+  ['men', 'Giorgio Armani', 'Stronger With You Absolutely', 800],
+  ['men', 'Lacoste', 'L.12.12 White', 800],
+  ['men', 'Paco Rabanne', 'Pure XS', 800],
+  ['men', 'Kenzo', 'Homme', 800],
+  // ЖЕНСКИЕ
+  ['women', 'Giorgio Armani', 'My Way', 800],
+  ['women', 'Elizabeth Arden', 'White Tea', 800],
+  ['women', 'Chanel', 'N°5', 800],
+  ['women', 'Chanel', 'Chance Eau Tendre', 1000],
+  ['women', 'Chanel', 'Chance', 1000],
+  ['women', 'Chanel', 'Chance Eau Fraîche', 1000],
+  ['women', 'Chanel', 'Chance Splendide', 1200],
+  ['women', 'Givenchy', 'Interdit', 800],
+  ['women', 'Guerlain', 'La Petite Robe Noire', 1000],
+  ['women', 'Lattafa', 'Yara', 1000],
+  ['women', 'Prada', 'Paradoxe', 1000],
+  ['women', 'Lacoste', 'Pour Femme', 1000],
+  ['women', 'Parfums de Marly', 'Атенайс', 1200],
+  ['women', 'HFC', 'Venus', 1200],
+  ['women', 'HFC', 'Devil’s Intrigue', 1200],
+  ['women', 'Givenchy', 'Ange ou Démon', 800],
+  ['women', 'Lanvin', 'Modern Princess', 1000],
+  ['women', 'Yves Saint Laurent', 'Black Opium', 1200],
+  ['women', 'Yves Saint Laurent', 'Libre', 1200],
+  ['women', 'Jo Malone', 'Peony & Blush Suede', 1000],
+  ['women', '', 'Brunello Cucinelli', 1200],
+  ['women', 'Lanvin', 'Marry Me', 1000],
+  ['women', 'Bvlgari', 'Omnia Crystalline', 1000],
+  ['women', 'Narciso Rodriguez', 'For Her (бежевый)', 1000],
+  ['women', 'Versace', 'Bright Crystal (розовый)', 1200],
+  ['women', 'Salvatore Ferragamo', 'Incanto Sunshine', 1000],
+  ['women', 'Victoria’s Secret', 'Bombshell', 1000],
+  ['women', 'Dior', 'Addict 2', 1000],
+  ['women', 'Anna Sui', 'Lucky Wish', 800],
+  ['women', 'Lancôme', 'La Vie Est Belle', 1000],
+  ['women', 'Amouage', 'Sunshine Woman', 1000],
+  ['women', 'Lanvin', 'Éclat d’Arpège', 1000],
+  ['women', 'Givenchy', 'Dahlia Divin', 800],
+  ['women', 'Creed', 'Элидария', 800],
+  ['women', 'Guerlain', 'Mandarine Basilic', 800],
+  ['women', 'Kenzo', 'Femme', 800],
+  ['women', 'Giorgio Armani', 'Acqua di Giò Femme', 800],
+  ['women', 'Chanel', 'Coco Mademoiselle', 1000],
+  ['women', 'Azzaro', 'Mademoiselle', 800],
+  ['women', 'Creed', 'Aventus for Her', 1000],
+  ['women', 'Dolce & Gabbana', 'Light Blue', 800],
+  ['women', 'Attar Collection', 'Crystal Love', 800],
+  ['women', 'Victoria’s Secret', 'So Sexy', 800],
+  ['women', 'Parfums de Marly', 'Meliora', 800],
+  ['women', 'Parfums de Marly', 'Delina', 800],
+  ['women', 'Versace', 'Versense', 800],
+  ['women', 'Franck Olivier', 'Nature', 800],
+  ['women', 'Jimmy Choo', 'Blossom', 1000],
+  ['women', 'Versace', 'Crystal Noir', 800],
+  ['women', '', 'Императрица', 1000],
+  ['women', 'Creed', 'Carmina', 800],
+  ['women', 'Dolce & Gabbana', 'Peony', 1000],
+  ['women', 'Victoria’s Secret', 'Love Is Heaven', 800],
+  ['women', 'Trussardi', 'Donna', 1000],
+  ['women', 'By Kilian', 'Good Girl Gone Bad', 1200],
+  ['women', 'Dior', 'J’adore', 1000],
+  ['women', 'Carolina Herrera', 'Good Girl', 1200],
+  ['women', 'Gucci', 'Flora Gardenia', 1000],
+  ['women', 'Gucci', 'Flora Parfum', 800],
+  ['women', 'Givenchy', 'Irresistible', 800],
+  ['women', 'Parfums de Marly', 'Valaya', 1200],
+  ['women', 'Burberry', 'Her', 1000],
+  ['women', 'Burberry', 'Weekend', 800],
+  ['women', 'Prada', 'Candy', 800],
+  // БЕЗ ГРАНИЦ
+  ['unisex', 'Clive Christian', 'Panda', 1200],
+  ['unisex', 'Montale', 'Arabians Tonka', 1000],
+  ['unisex', 'Orto Parisi', 'Megamare', 1000],
+  ['unisex', 'Roja', 'Isola Blu', 800],
+  ['unisex', 'Roja', 'Elixir', 800],
+  ['unisex', 'Essential Parfums', 'Bois Impérial', 1000],
+  ['unisex', 'Nasomatto', 'Black Afgano', 800],
+  ['unisex', '', 'Андромеда', 800],
+  ['unisex', 'Arabian Oud', 'Ол Фарид', 1000],
+  ['unisex', 'Ex Nihilo', 'Blue Talisman', 1200],
+  ['unisex', 'Xerjoff', 'Naxos', 1000],
+  ['unisex', 'Xerjoff', 'Erba Pura', 800],
+  ['unisex', '', 'Кассапея', 1000],
+  ['unisex', 'Mancera', 'Cedrat Boise', 800],
+  ['unisex', 'Nishane', 'Hacivat', 800],
+  ['unisex', '', 'Накос Вертус', 1000],
+  ['unisex', '', 'Далал', 1000],
+  ['unisex', 'Kajal', 'Almaz', 1000],
+  ['unisex', '', 'Космола 4', 1000],
+  ['unisex', '', 'Куркуджан Силвер', 1200],
+  ['unisex', '', 'Хануман', 1000],
+  ['unisex', 'Amouage', 'Guidance', 1200],
+  ['unisex', '', 'Красный африканец', 800],
+  ['unisex', 'Zarkoperfume', 'Pink Molécule 090.09', 1000],
+  ['unisex', '', 'Кровь шахида', 800],
+  ['unisex', 'By Kilian', 'Angels’ Share', 1000],
+  ['unisex', 'Montale', 'Chocolate Greedy', 800],
+  ['unisex', 'Byredo', 'Blanche', 1000],
+  ['unisex', 'Byredo', 'Bal d’Afrique', 1000],
+  ['unisex', 'Attar Collection', 'Hayati', 1000],
+  ['unisex', 'Attar Collection', 'Musk Kashmir', 1000],
+  ['unisex', 'By Kilian', 'Rolling in Love', 1200],
+  ['unisex', 'Mancera', 'Мелоди', 1000],
+  ['unisex', '', 'Мех Флай Хайг', 1000],
+  ['unisex', 'Xerjoff', 'Gran Ballo', 800],
+]
+more.forEach(([g, b, n, p]) => rows.push([g, b, n, p, '', '', '']))
+
+// ===== КОПИИ (раздел «Вдохновение»): [бренд оригинала, название, цена за 1 мл] =====
+// Цена 0 = цена не указана, на сайте покажется «уточняйте цену».
+const copies = [
+  ['Carolina Herrera', 'Good Girl', 500],
+  ['Zielinski', 'Jasmine', 500],
+  ['Versace', 'Bright Crystal', 500],
+  ['Nina Ricci', 'Nina', 500],
+  ['', 'Gaba', 500],
+  ['Amouage', 'Reflection', 500],
+  ['Creed', 'Silver Mountain Water', 500],
+  ['Dior', 'Miss Dior', 500],
+  ['', 'Феромон', 500],
+  ['', 'Люменсайт', 500],
+  ['', 'Белый дым', 500],
+  ['Lacoste', 'Pour Femme', 500],
+  ['Givenchy', 'Blue Label', 0],
+  ['Carolina Herrera', '212 Men', 500],
+  ['Moschino', 'Love', 500],
+  ['Valentino', 'Absolu', 500],
+  ['Giorgio Armani', 'Sì', 500],
+  ['Memo', 'Marfa', 500],
+  ['Lancôme', 'Trésor', 500],
+  ['Davidoff', 'Echo', 500],
+  ['Yves Saint Laurent', 'Libre', 500],
+]
+copies.forEach(([b, n, p]) => rows.push(['copy', b ? `Копия · ${b}` : 'Копия', n, p, '', '', '']))
+
+const tr = { а:'a',б:'b',в:'v',г:'g',д:'d',е:'e',ё:'e',ж:'zh',з:'z',и:'i',й:'y',к:'k',л:'l',м:'m',н:'n',о:'o',п:'p',р:'r',с:'s',т:'t',у:'u',ф:'f',х:'kh',ц:'ts',ч:'ch',ш:'sh',щ:'sch',ъ:'',ы:'y',ь:'',э:'e',ю:'yu',я:'ya' }
+const slug = (s) =>
+  s.toLowerCase().replace(/[а-яё]/g, (c) => tr[c]).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+const byMl = (perMl) => Object.fromEntries(shop.sizes.map((s) => [s, s * perMl]))
+const fallback = 'Подробности об аромате уточняйте у консультанта в WhatsApp.'
+
+export const perfumes = rows.map(([gender, brand, name, perMl, direction, notes, description], i) => {
+  const id = slug(`${brand} ${name}`) || `item-${i + 1}`
+  return {
+    id, gender, brand, name, direction,
+    notes: notes ? notes.split(', ') : [],
+    description: description || fallback,
+    image: `/images/${id}.jpg`,
+    prices: typeof perMl === 'object' ? perMl : byMl(perMl),
+  }
+})
