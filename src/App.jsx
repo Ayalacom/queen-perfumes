@@ -1,5 +1,6 @@
-import { useEffect } from 'react'
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { useEffect, useRef } from 'react'
+import { Routes, Route, useLocation, useNavigationType } from 'react-router-dom'
+import { scrollMemory } from './scroll.js'
 import Header from './components/Header.jsx'
 import Footer from './components/Footer.jsx'
 import Home from './pages/Home.jsx'
@@ -9,9 +10,28 @@ import Contacts from './pages/Contacts.jsx'
 import Favorites from './pages/Favorites.jsx'
 import Cart from './pages/Cart.jsx'
 
+if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual'
+
 function ScrollToTop() {
   const { pathname } = useLocation()
+  const type = useNavigationType()
+  const prev = useRef(null)
   useEffect(() => {
+    if (prev.current === pathname) return
+    const y = scrollMemory[pathname]
+    const fromProduct = prev.current && prev.current.startsWith('/perfume/')
+    prev.current = pathname
+
+    if (y != null && (fromProduct || type === 'POP')) {
+      let tries = 0
+      let raf
+      const restore = () => {
+        window.scrollTo(0, y)
+        if (Math.abs(window.scrollY - y) > 2 && tries++ < 40) raf = requestAnimationFrame(restore)
+      }
+      restore()
+      return () => cancelAnimationFrame(raf)
+    }
     window.scrollTo(0, 0)
   }, [pathname])
   return null

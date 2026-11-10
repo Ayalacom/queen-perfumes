@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import ProductImage from './ProductImage.jsx'
 import { formatPrice, minPrice } from '../utils.js'
 import { useStore } from '../store.jsx'
+import { scrollMemory } from '../scroll.js'
 
 export default function ProductCard({ p }) {
   const { favs, toggleFav } = useStore()
@@ -9,7 +10,11 @@ export default function ProductCard({ p }) {
   const active = favs.includes(p.id)
   return (
     <div className="card">
-      <Link to={`/perfume/${p.id}`} className="card__link">
+      <Link
+        to={`/perfume/${p.id}`}
+        className="card__link"
+        onClick={() => { scrollMemory[window.location.pathname] = window.scrollY }}
+      >
         <ProductImage src={p.image} alt={`${p.brand} ${p.name}`} />
         <span className="card__brand">{p.brand}</span>
         <span className="card__name">{p.name}</span>

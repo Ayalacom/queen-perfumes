@@ -15,11 +15,12 @@ export const shop = {
   sizes: [3, 5, 10, 12, 13, 15, 20, 25, 30, 50],
 
   categories: [
-    { key: 'women', path: '/women', nav: 'Женские', title: 'Женские ароматы' },
-    { key: 'men', path: '/men', nav: 'Мужские', title: 'Мужские ароматы' },
-    { key: 'unisex', path: '/unisex', nav: 'Без границ', title: 'Ароматы без границ' },
-    { key: 'copy', path: '/copy', nav: 'Вдохновение', title: 'Вдохновение', note: 'Копии известных ароматов' },
+    { key: 'men', path: '/men', nav: 'Мужской', title: 'Мужской' },
+    { key: 'women', path: '/women', nav: 'Женский', title: 'Женский' },
+    { key: 'unisex', path: '/unisex', nav: 'Унисекс', title: 'Унисекс' },
+    { key: 'copy', path: '/copy', nav: 'Копия Италия', title: 'Копия Италия' },
   ],
+
 
   paymentNote: '',
   paymentLink: '',
