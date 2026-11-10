@@ -99,8 +99,6 @@ const more = [
   ['men', 'Giorgio Armani', 'Stronger With You Intensely', 800],
   ['men', 'Giorgio Armani', 'Stronger With You Absolutely', 800],
   ['men', 'Lacoste', 'L.12.12 White', 800],
-  ['men', 'Paco Rabanne', 'Pure XS', 800],
-  ['men', 'Kenzo', 'Homme', 800],
   // ЖЕНСКИЕ
   ['women', 'Giorgio Armani', 'My Way', 800],
   ['women', 'Elizabeth Arden', 'White Tea', 800],
@@ -145,6 +143,7 @@ const more = [
   ['women', 'Dolce & Gabbana', 'Light Blue', 800],
   ['women', 'Attar Collection', 'Crystal Love', 800],
   ['women', 'Victoria’s Secret', 'So Sexy', 800],
+  ['women', 'Paco Rabanne', 'Pure XS', 800],
   ['women', 'Parfums de Marly', 'Meliora', 800],
   ['women', 'Parfums de Marly', 'Delina', 800],
   ['women', 'Versace', 'Versense', 800],
