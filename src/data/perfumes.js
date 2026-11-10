@@ -99,6 +99,7 @@ const more = [
   ['men', 'Giorgio Armani', 'Stronger With You Intensely', 800],
   ['men', 'Giorgio Armani', 'Stronger With You Absolutely', 800],
   ['men', 'Lacoste', 'L.12.12 White', 800],
+  ['men', 'Kenzo', "L'Eau par Kenzo pour Homme", 800],
   // ЖЕНСКИЕ
   ['women', 'Giorgio Armani', 'My Way', 800],
   ['women', 'Elizabeth Arden', 'White Tea', 800],
