@@ -18,7 +18,7 @@ export const shop = {
     { key: 'men', path: '/men', nav: 'Мужской', title: 'Мужской' },
     { key: 'women', path: '/women', nav: 'Женский', title: 'Женский' },
     { key: 'unisex', path: '/unisex', nav: 'Унисекс', title: 'Унисекс' },
-    { key: 'copy', path: '/copy', nav: 'Копия Италия', title: 'Копия Италия' },
+    { key: 'copy', path: '/copy', nav: 'Копия Турция', title: 'Копия Турция' },
   ],
 
 
