@@ -157,6 +157,7 @@ const more = [
   ['women', 'Victoria’s Secret', 'Love Is Heaven', 800],
   ['women', 'Trussardi', 'Donna', 1000],
   ['women', 'By Kilian', 'Good Girl Gone Bad', 1200],
+  ['women', 'Brunello Cucinelli', 'Brunello Cucinelli Pour Femme', 1200],
   ['women', 'Dior', 'J’adore', 1000],
   ['women', 'Carolina Herrera', 'Good Girl', 1200],
   ['women', 'Gucci', 'Flora Gardenia', 1000],
